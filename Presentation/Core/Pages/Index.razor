@@ -77,7 +77,7 @@
 		{
 			if(element.Name == _purchasedProduct.Name)
 			{
-				ProductService.UpdateProductStock(element);
+				ProductService.UpdateProductStock(element,_purchasedProduct.Amount);
 			}
 		}
 		await Task.Delay(2000);
