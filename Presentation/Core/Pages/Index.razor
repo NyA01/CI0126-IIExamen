@@ -1,34 +1,65 @@
 ﻿@using Domain.Products.Entities
 @using Domain.Products.Repositories
 @using Application.Products
+@using Domain.PurchasedProducts.Entities;
+@using Domain.PurchasedProducts.Repositories;
+@using Application.PurchasedProducts;
+
 @using System.Globalization
 @inject IProductService ProductService
 @inject ISnackbar Snackbar
 @inject NavigationManager nav
 @page "/"
 
-<MudText Align="Align.Center" Typo="Typo.h6" GutterBottom="true">Vending Machine</MudText>
+<MudText Align="Align.Center" Typo="Typo.h4" GutterBottom="true">Vending Machine</MudText>
+ <MudSpacer/> <MudSpacer/>
+<MudGrid>
+	<MudItem xs="6">
+		<MudText Align="Align.Center" Typo="Typo.h5">Available drinks</MudText>
+		<MudTable @ref="_tableAvailableDrinks" Items="@_productsList" MultiSelection="true" @bind-SelectedItems="_selectedItems" Hover="true" Breakpoint="Breakpoint.Sm">
+			<HeaderContent>
+				<MudTh Style="text-align:justify-all">Stock</MudTh>
+				<MudTh Style="text-align:justify-all">Name</MudTh>
+				<MudTh Style="text-align:justify-all">Price</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+				<MudTd Style="text-align:justify-all" DataLabel="Stock">@context.Stock</MudTd>
+				<MudTd Style="text-align:justify-all" DataLabel="Name">@context.Name</MudTd>
+				<MudTd Style="text-align:justify-all" DataLabel="Price">@PriceFormat(context.Price)</MudTd>
+			</RowTemplate>
+		</MudTable>
+		<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="BuySelectedItems" Color="Color.Secondary">Buy</MudButton></MudToolBar>
+	</MudItem>
+	<MudItem xs="6">
+		<MudText Align="Align.Center" Typo="Typo.h5">Purchase products</MudText>
+		<MudForm @ref="_form">
+			 <MudItem xs="3">
+                    <MudSelect typeof="int" @bind-Value="_purchasedProduct.Name" Label="Drink name" Required="true" 
+                    RequiredError="Choose a product" Variant="Variant.Outlined">
+                        <MudSelectItem Value="@("Coca Cola")">Coca Cola</MudSelectItem>
+                        <MudSelectItem Value="@("Pepsi")">Pepsi</MudSelectItem>
+                        <MudSelectItem Value="@("Fanta")">Fanta</MudSelectItem>
+                        <MudSelectItem Value="@("Sprite")">Sprite</MudSelectItem>
+                    </MudSelect>
+              </MudItem>
 
-<MudTable @ref="_tableAvailableDrinks" Items="@_productsList" MultiSelection="true" @bind-SelectedItems="_selectedItems" Hover="true" Breakpoint="Breakpoint.Sm">
-	<HeaderContent>
-		<MudTh Style="text-align:justify-all">Stock</MudTh>
-		<MudTh Style="text-align:justify-all">Name</MudTh>
-		<MudTh Style="text-align:justify-all">Price</MudTh>
-	</HeaderContent>
-	<RowTemplate>
-		<MudTd Style="text-align:justify-all" DataLabel="Stock">@context.Stock</MudTd>
-        <MudTd Style="text-align:justify-all" DataLabel="Name">@context.Name</MudTd>
-        <MudTd Style="text-align:justify-all" DataLabel="Price">@PriceFormat(context.Price)</MudTd>
-	</RowTemplate>
-</MudTable>
-<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="BuySelectedItems" Color="Color.Secondary">Buy</MudButton></MudToolBar>
+
+
+
+        </MudForm>
+		<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="BuySelectedItems" Color="Color.Secondary">Buy</MudButton></MudToolBar>
+	</MudItem>
+</MudGrid>
+
+
 
 @code {
-
 	private MudTable<Product> _tableAvailableDrinks;
 	private IEnumerable<Product> _productsList;
 	private HashSet<Product> _selectedItems = new HashSet<Product>();
 	private CultureInfo _cultureCR = CultureInfo.GetCultureInfo("es-CR");
+	private MudForm _form;
+	private PurchasedProduct _purchasedProduct = new PurchasedProduct("",0,0.0,"Canned Soda");
 
 	protected override async Task OnInitializedAsync()
 	{
