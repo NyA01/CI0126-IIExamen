@@ -7,6 +7,7 @@
 
 @using System.Globalization
 @inject IProductService ProductService
+@inject IPurchasedProductService PurchaseProductService
 @inject ISnackbar Snackbar
 @inject NavigationManager nav
 @page "/"
@@ -16,7 +17,7 @@
 <MudGrid>
 	<MudItem xs="6">
 		<MudText Align="Align.Center" Typo="Typo.h5">Available drinks</MudText>
-		<MudTable @ref="_tableAvailableDrinks" Items="@_productsList" MultiSelection="true" @bind-SelectedItems="_selectedItems" Hover="true" Breakpoint="Breakpoint.Sm">
+		<MudTable @ref="_tableAvailableDrinks" Items="@_productsList" Hover="true" Breakpoint="Breakpoint.Sm">
 			<HeaderContent>
 				<MudTh Style="text-align:justify-all">Stock</MudTh>
 				<MudTh Style="text-align:justify-all">Name</MudTh>
@@ -28,26 +29,27 @@
 				<MudTd Style="text-align:justify-all" DataLabel="Price">@PriceFormat(context.Price)</MudTd>
 			</RowTemplate>
 		</MudTable>
-		<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="BuySelectedItems" Color="Color.Secondary">Buy</MudButton></MudToolBar>
+
 	</MudItem>
 	<MudItem xs="6">
-		<MudText Align="Align.Center" Typo="Typo.h5">Purchase products</MudText>
+		<MudText Align="Align.Left" Typo="Typo.h5">Purchase products</MudText> <MudSpacer/> <MudSpacer/>
 		<MudForm @ref="_form">
-			 <MudItem xs="3">
-                    <MudSelect typeof="int" @bind-Value="_purchasedProduct.Name" Label="Drink name" Required="true" 
-                    RequiredError="Choose a product" Variant="Variant.Outlined">
-                        <MudSelectItem Value="@("Coca Cola")">Coca Cola</MudSelectItem>
-                        <MudSelectItem Value="@("Pepsi")">Pepsi</MudSelectItem>
-                        <MudSelectItem Value="@("Fanta")">Fanta</MudSelectItem>
-                        <MudSelectItem Value="@("Sprite")">Sprite</MudSelectItem>
-                    </MudSelect>
-              </MudItem>
-
-
-
+			 <MudItem xs="8">
+				<MudSelect typeof="int" @bind-Value="_purchasedProduct.Name" Label="Drink name" Required="true" 
+				RequiredError="Choose a product" Variant="Variant.Outlined">
+					<MudSelectItem Value="@("Coca Cola")">Coca Cola</MudSelectItem>
+					<MudSelectItem Value="@("Pepsi")">Pepsi</MudSelectItem>
+					<MudSelectItem Value="@("Fanta")">Fanta</MudSelectItem>
+					<MudSelectItem Value="@("Sprite")">Sprite</MudSelectItem>
+				</MudSelect>
+             </MudItem>
+			 <MudItem xs="2"></MudItem>
+			 <MudItem xs="8">
+				<MudNumericField @bind-Value="_purchasedProduct.Amount" Min="1" Label="Enter the amount of products" Variant="Variant.Outlined"></MudNumericField>
+             </MudItem>
 
         </MudForm>
-		<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="BuySelectedItems" Color="Color.Secondary">Buy</MudButton></MudToolBar>
+		<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="AddProductsToPurchase" Color="Color.Secondary">Buy</MudButton></MudToolBar>
 	</MudItem>
 </MudGrid>
 
@@ -56,31 +58,40 @@
 @code {
 	private MudTable<Product> _tableAvailableDrinks;
 	private IEnumerable<Product> _productsList;
-	private HashSet<Product> _selectedItems = new HashSet<Product>();
 	private CultureInfo _cultureCR = CultureInfo.GetCultureInfo("es-CR");
 	private MudForm _form;
 	private PurchasedProduct _purchasedProduct = new PurchasedProduct("",0,0.0,"Canned Soda");
+	private Product _product = new Product(0, "", 0.0, "");
 
 	protected override async Task OnInitializedAsync()
 	{
 		_productsList = ProductService.GetAllProducts();
 	}
 
-	private async Task BuySelectedItems()
+	private async Task AddProductsToPurchase()
 	{
-		if (_selectedItems.Length() > 0)
+		GetPriceByProductName(_purchasedProduct);
+		PurchaseProductService.AddPurchasedProduct(_purchasedProduct);
+		Snackbar.Add("Added products to pay", Severity.Success);
+		foreach(Product element in _productsList)
 		{
-			Snackbar.Add("successful purchase", Severity.Success);
-			foreach(Product element in _selectedItems)
+			if(element.Name == _purchasedProduct.Name)
 			{
 				ProductService.UpdateProductStock(element);
 			}
-			await Task.Delay(2000);
-			nav.NavigateTo($"/");
 		}
-		else
+		await Task.Delay(2000);
+		nav.NavigateTo($"/");
+	}
+
+	private void GetPriceByProductName(PurchasedProduct purchasedProduct)
+	{
+		foreach(Product item in _productsList)
 		{
-			Snackbar.Add("Please, select the product you wish to buy", Severity.Warning);
+			if(item.Name == purchasedProduct.Name)
+			{
+				_purchasedProduct.Price = item.Price;
+			}
 		}
 	}
 
