@@ -1,3 +1,62 @@
-﻿@page "/"
+﻿@using Domain.Products.Entities
+@using Domain.Products.Repositories
+@using Application.Products
+@using System.Globalization
+@inject IProductService ProductService
+@inject ISnackbar Snackbar
+@inject NavigationManager nav
+@page "/"
 
-Hello World
+<MudText Align="Align.Center" Typo="Typo.h6" GutterBottom="true">Vending Machine</MudText>
+
+<MudTable @ref="_tableAvailableDrinks" Items="@_productsList" MultiSelection="true" @bind-SelectedItems="_selectedItems" Hover="true" Breakpoint="Breakpoint.Sm">
+	<HeaderContent>
+		<MudTh Style="text-align:justify-all">Stock</MudTh>
+		<MudTh Style="text-align:justify-all">Name</MudTh>
+		<MudTh Style="text-align:justify-all">Price</MudTh>
+	</HeaderContent>
+	<RowTemplate>
+		<MudTd Style="text-align:justify-all" DataLabel="Stock">@context.Stock</MudTd>
+        <MudTd Style="text-align:justify-all" DataLabel="Name">@context.Name</MudTd>
+        <MudTd Style="text-align:justify-all" DataLabel="Price">@PriceFormat(context.Price)</MudTd>
+	</RowTemplate>
+</MudTable>
+<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="BuySelectedItems" Color="Color.Secondary">Buy</MudButton></MudToolBar>
+
+@code {
+
+	private MudTable<Product> _tableAvailableDrinks;
+	private IEnumerable<Product> _productsList;
+	private HashSet<Product> _selectedItems = new HashSet<Product>();
+	private CultureInfo _cultureCR = CultureInfo.GetCultureInfo("es-CR");
+
+	protected override async Task OnInitializedAsync()
+	{
+		_productsList = ProductService.GetAllProducts();
+	}
+
+	private async Task BuySelectedItems()
+	{
+		if (_selectedItems.Length() > 0)
+		{
+			Snackbar.Add("successful purchase", Severity.Success);
+			foreach(Product element in _selectedItems)
+			{
+				ProductService.UpdateProductStock(element);
+			}
+			await Task.Delay(2000);
+			nav.NavigateTo($"/");
+		}
+		else
+		{
+			Snackbar.Add("Please, select the product you wish to buy", Severity.Warning);
+		}
+	}
+
+	private string PriceFormat(double price)
+	{
+		string formatedPrice = string.Format("{0:N}", price);
+		formatedPrice = _cultureCR.NumberFormat.CurrencySymbol + formatedPrice;
+		return formatedPrice;
+    }
+}
