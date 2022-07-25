@@ -7,8 +7,7 @@
 @inject NavigationManager nav
 @page "/"
 
-
- <MudText Align="Align.Center" Typo="Typo.h6" GutterBottom="true">Vending Machine</MudText>
+<MudText Align="Align.Center" Typo="Typo.h6" GutterBottom="true">Vending Machine</MudText>
 
 <MudTable @ref="_tableAvailableDrinks" Items="@_productsList" MultiSelection="true" @bind-SelectedItems="_selectedItems" Hover="true" Breakpoint="Breakpoint.Sm">
 	<HeaderContent>
@@ -23,6 +22,7 @@
 	</RowTemplate>
 </MudTable>
 <MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="BuySelectedItems" Color="Color.Secondary">Buy</MudButton></MudToolBar>
+
 @code {
 
 	private MudTable<Product> _tableAvailableDrinks;
