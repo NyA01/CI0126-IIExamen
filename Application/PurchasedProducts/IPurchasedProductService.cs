@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.PurchasedProducts
 {
-    public interface IPurchasedProductsService
+    public interface IPurchasedProductService
     {
         void AddPurchasedProduct(PurchasedProduct productPurchased);
     }
