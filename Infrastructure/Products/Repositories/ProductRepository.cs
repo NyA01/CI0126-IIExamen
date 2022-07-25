@@ -13,16 +13,16 @@ namespace Infrastructure.Products.Repositories
     public class ProductRepository : IProductRepository
     {
         private readonly ProductDBContext _dbContext;
-        public IUnitOfWork UnitOfWork => (IUnitOfWork)_dbContext;
+       
 
-        public ProductRepository(ProductDBContext unitOfWork)
+        public ProductRepository()
         {
-            _dbContext = unitOfWork;
+            _dbContext = new ProductDBContext();
         }
 
-        public async Task<IEnumerable<Product>> GetAllProducts()
+        public IEnumerable<Product> GetAllProducts()
         {
-            IList<Product> productList = _dbContext.Products.Where(e => e.Type == "Canned Soda").ToList();                                    
+            IEnumerable<Product> productList = _dbContext.Products.Where(e => e.Type == "Canned Soda").ToList();                                    
             return productList;
         }
     }

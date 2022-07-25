@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.Products.Implementations
 {
-    internal class ProductService : IProductService
+    public class ProductService : IProductService
     {
         private readonly IProductRepository _productRepository;
         public ProductService(IProductRepository productRepository)
@@ -16,9 +16,9 @@ namespace Application.Products.Implementations
             _productRepository = productRepository;
         }
 
-        public async Task<IEnumerable<Product>> GetAllProducts()
+        public IEnumerable<Product> GetAllProducts()
         {
-            return await _productRepository.GetAllProducts();
+            return _productRepository.GetAllProducts();
         }
     }
 }

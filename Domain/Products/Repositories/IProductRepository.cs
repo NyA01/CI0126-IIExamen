@@ -9,6 +9,6 @@ namespace Domain.Products.Repositories
 {
     public interface IProductRepository
     {
-        Task<IEnumerable<Product>> GetAllProducts();
+        IEnumerable<Product> GetAllProducts();
     }
 }

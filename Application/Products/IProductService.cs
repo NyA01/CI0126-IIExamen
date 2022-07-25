@@ -9,6 +9,6 @@ namespace Application.Products
 {
     public interface IProductService
     {
-        Task<IEnumerable<Product>> GetAllProducts();
+        IEnumerable<Product> GetAllProducts();
     }
 }

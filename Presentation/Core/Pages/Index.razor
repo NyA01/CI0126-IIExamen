@@ -1,3 +1,48 @@
-﻿@page "/"
+﻿@using Domain.Products.Entities
+@using Domain.Products.Repositories
+@using Application.Products
+@inject IProductService ProductService
+@inject ISnackbar Snackbar
+@page "/"
 
-Hello World
+
+ <MudText Align="Align.Center" Typo="Typo.h6" GutterBottom="true">Vending Machine</MudText>
+
+<MudTable @ref="_tableAvailableDrinks" Items="@_productsList" MultiSelection="true" @bind-SelectedItems="_selectedItems" Hover="true" Breakpoint="Breakpoint.Sm">
+	<HeaderContent>
+		<MudTh Style="text-align:justify-all">Stock</MudTh>
+		<MudTh Style="text-align:justify-all">Name</MudTh>
+		<MudTh Style="text-align:justify-all">Price</MudTh>
+	</HeaderContent>
+	<RowTemplate>
+		<MudTd Style="text-align:justify-all" DataLabel="Stock">@context.Stock</MudTd>
+        <MudTd Style="text-align:justify-all" DataLabel="Name">@context.Name</MudTd>
+        <MudTd Style="text-align:justify-all" DataLabel="Price">@context.Price</MudTd>
+	</RowTemplate>
+</MudTable>
+<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="SelectedItems" Color="Color.Primary">Buy</MudButton></MudToolBar>
+@code {
+
+	private MudTable<Product> _tableAvailableDrinks;
+	private IEnumerable<Product> _productsList;
+	private HashSet<Product> _selectedItems = new HashSet<Product>();
+
+	protected override async Task OnInitializedAsync()
+    {
+		_productsList = ProductService.GetAllProducts();
+    }
+
+	private void SelectedItems()
+	{
+		if (_selectedItems.Length() > 0)
+		{
+			Snackbar.Add("successful purchase", Severity.Success);
+		}
+		else
+		{
+			Snackbar.Add("Please select the product you wish to buy", Severity.Warning);
+		}
+	}
+
+
+}
