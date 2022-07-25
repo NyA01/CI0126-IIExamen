@@ -10,5 +10,6 @@ namespace Application.Products
     public interface IProductService
     {
         IEnumerable<Product> GetAllProducts();
+        void UpdateProductStock(Product product);
     }
 }

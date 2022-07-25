@@ -10,5 +10,6 @@ namespace Domain.Products.Repositories
     public interface IProductRepository
     {
         IEnumerable<Product> GetAllProducts();
+        void UpdateProductStock(Product product);
     }
 }

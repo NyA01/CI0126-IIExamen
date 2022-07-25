@@ -20,5 +20,10 @@ namespace Application.Products.Implementations
         {
             return _productRepository.GetAllProducts();
         }
+
+        public void UpdateProductStock(Product product)
+        {
+            _productRepository.UpdateProductStock(product);
+        }
     }
 }

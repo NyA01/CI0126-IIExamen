@@ -25,5 +25,14 @@ namespace Infrastructure.Products.Repositories
             IEnumerable<Product> productList = _dbContext.Products.Where(e => e.Type == "Canned Soda").ToList();                                    
             return productList;
         }
+
+        public void UpdateProductStock(Product product)
+        {
+            IEnumerable<Product> productList = _dbContext.Products.Where(e => e.Name == product.Name).ToList();
+            foreach(Product element in productList)
+            {
+                element.Stock = product.Stock - 1;
+            }
+        }
     }
 }

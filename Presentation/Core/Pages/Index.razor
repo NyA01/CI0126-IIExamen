@@ -3,6 +3,7 @@
 @using Application.Products
 @inject IProductService ProductService
 @inject ISnackbar Snackbar
+@inject NavigationManager nav
 @page "/"
 
 
@@ -20,7 +21,7 @@
         <MudTd Style="text-align:justify-all" DataLabel="Price">@context.Price</MudTd>
 	</RowTemplate>
 </MudTable>
-<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="SelectedItems" Color="Color.Primary">Buy</MudButton></MudToolBar>
+<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="BuySelectedItems" Color="Color.Secondary">Buy</MudButton></MudToolBar>
 @code {
 
 	private MudTable<Product> _tableAvailableDrinks;
@@ -28,21 +29,25 @@
 	private HashSet<Product> _selectedItems = new HashSet<Product>();
 
 	protected override async Task OnInitializedAsync()
-    {
+	{
 		_productsList = ProductService.GetAllProducts();
-    }
+	}
 
-	private void SelectedItems()
+	private async Task BuySelectedItems()
 	{
 		if (_selectedItems.Length() > 0)
 		{
 			Snackbar.Add("successful purchase", Severity.Success);
+			foreach(Product element in _selectedItems)
+			{
+				ProductService.UpdateProductStock(element);
+			}
+			 await Task.Delay(2000);
+			 nav.NavigateTo($"/");
 		}
 		else
 		{
-			Snackbar.Add("Please select the product you wish to buy", Severity.Warning);
+			Snackbar.Add("Please, select the product you wish to buy", Severity.Warning);
 		}
 	}
-
-
 }
