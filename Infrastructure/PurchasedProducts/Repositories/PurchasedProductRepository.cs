@@ -24,5 +24,13 @@ namespace Infrastructure.Products.Repositories
         {
             _dbContext.PurchasedProducts.Add(productPurchased);
         }
+
+        public IEnumerable<PurchasedProduct> GetAllPurchasedProducts()
+        {
+            
+            IEnumerable<PurchasedProduct> productList = _dbContext.PurchasedProducts.Where(e => e.Type == "Canned Soda").ToList();
+            return productList;
+            
+        }
     }
 }

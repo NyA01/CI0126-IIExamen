@@ -10,5 +10,6 @@ namespace Domain.PurchasedProducts.Repositories
     public interface IPurchasedProductRepository
     {
         void AddPurchasedProduct(PurchasedProduct productPurchased);
+        IEnumerable<PurchasedProduct> GetAllPurchasedProducts();
     }
 }

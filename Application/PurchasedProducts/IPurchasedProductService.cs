@@ -10,5 +10,6 @@ namespace Application.PurchasedProducts
     public interface IPurchasedProductService
     {
         void AddPurchasedProduct(PurchasedProduct productPurchased);
+        IEnumerable<PurchasedProduct> GetAllPurchasedProducts();
     }
 }

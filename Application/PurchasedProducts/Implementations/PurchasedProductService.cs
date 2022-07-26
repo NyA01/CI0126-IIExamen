@@ -20,5 +20,10 @@ namespace Application.PurchasedProducts.Implementations
         {
             _purchasedProductRepository.AddPurchasedProduct(productPurchased);
         }
+
+        public IEnumerable<PurchasedProduct> GetAllPurchasedProducts()
+        {
+            return _purchasedProductRepository.GetAllPurchasedProducts();
+        }
     }
 }

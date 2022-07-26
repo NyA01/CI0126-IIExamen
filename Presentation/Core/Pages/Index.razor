@@ -29,10 +29,10 @@
 				<MudTd Style="text-align:justify-all" DataLabel="Price">@PriceFormat(context.Price)</MudTd>
 			</RowTemplate>
 		</MudTable>
-
 	</MudItem>
 	<MudItem xs="6">
 		<MudText Align="Align.Left" Typo="Typo.h5">Purchase products</MudText> <MudSpacer/> <MudSpacer/>
+	    <MudItem xs="2"><MudButton Disabled=true></MudButton></MudItem>
 		<MudForm @ref="_form">
 			 <MudItem xs="8">
 				<MudSelect typeof="int" @bind-Value="_purchasedProduct.Name" Label="Drink name" Required="true" 
@@ -43,21 +43,40 @@
 					<MudSelectItem Value="@("Sprite")">Sprite</MudSelectItem>
 				</MudSelect>
              </MudItem>
-			 <MudItem xs="2"></MudItem>
+			 <MudItem xs="2"><MudButton Disabled=true></MudButton></MudItem>
 			 <MudItem xs="8">
 				<MudNumericField @bind-Value="_purchasedProduct.Amount" Min="1" Label="Enter the amount of products" Variant="Variant.Outlined"></MudNumericField>
              </MudItem>
-
         </MudForm>
-		<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="AddProductsToPurchase" Color="Color.Secondary">Buy</MudButton></MudToolBar>
+		<MudItem xs="2"><MudButton Disabled=true></MudButton></MudItem>
+		<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="AddProductsToPurchase" Color="Color.Secondary">Add to pay</MudButton></MudToolBar>
 	</MudItem>
+	<br>
+	<MudItem xs="6">
+		<MudText Align="Align.Center" Typo="Typo.h5">Purchased Products</MudText>
+		<MudTable @ref="_tablePurchasedProducs" Items="@_purchasedProductsList" Hover="true" Breakpoint="Breakpoint.Sm">
+			<HeaderContent>
+				<MudTh Style="text-align:justify-all">Amount</MudTh>
+				<MudTh Style="text-align:justify-all">Name</MudTh>
+				<MudTh Style="text-align:justify-all">Unit Price</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+				<MudTd Style="text-align:justify-all" DataLabel="Amount">@context.Amount</MudTd>
+				<MudTd Style="text-align:justify-all" DataLabel="Name">@context.Name</MudTd>
+				<MudTd Style="text-align:justify-all" DataLabel="Price">@PriceFormat(context.Price)</MudTd>
+			</RowTemplate>
+		</MudTable>
+	</MudItem>
+
 </MudGrid>
 
 
 
 @code {
 	private MudTable<Product> _tableAvailableDrinks;
+	private MudTable<PurchasedProduct> _tablePurchasedProducs;
 	private IEnumerable<Product> _productsList;
+	private IEnumerable<PurchasedProduct> _purchasedProductsList = new List<PurchasedProduct>();
 	private CultureInfo _cultureCR = CultureInfo.GetCultureInfo("es-CR");
 	private MudForm _form;
 	private PurchasedProduct _purchasedProduct = new PurchasedProduct("",0,0.0,"Canned Soda");
@@ -71,6 +90,7 @@
 	private async Task AddProductsToPurchase()
 	{
 		ValidateProductToPurchase();
+		_purchasedProductsList = PurchaseProductService.GetAllPurchasedProducts();
 		await Task.Delay(2000);
 		nav.NavigateTo($"/");
 	}
@@ -78,22 +98,37 @@
 	private void ValidateProductToPurchase()
 	{
 		GetPriceByProductName(_purchasedProduct);
-		foreach(Product element in _productsList)
+		if(_purchasedProduct.Amount != 0)
 		{
-			if(element.Name == _purchasedProduct.Name)
+			foreach(Product element in _productsList)
 			{
-				if (element.Stock < _purchasedProduct.Amount)
+				if(element.Name == _purchasedProduct.Name)
 				{
-					Snackbar.Add("the quantity introduced is greater than the quantity in stock", Severity.Warning);
-				}
-				else
-				{
-					PurchaseProductService.AddPurchasedProduct(_purchasedProduct);
-					Snackbar.Add("Added products to pay", Severity.Success);
-					ProductService.UpdateProductStock(element,_purchasedProduct.Amount);
+					if (element.Stock < _purchasedProduct.Amount)
+					{
+						Snackbar.Add("the quantity introduced is greater than the quantity in stock", Severity.Warning);
+					}
+					else
+					{
+						int amountProductPurchased = _purchasedProduct.Amount;
+						string nameProductPurchased =_purchasedProduct.Name;
+						double priceProductPurchased = _purchasedProduct.Price;
+						string typeProductPurchased = "Canned Soda";
+						PurchasedProduct _purchasedProduct1 = new PurchasedProduct(nameProductPurchased,amountProductPurchased,priceProductPurchased,typeProductPurchased);
+						PurchaseProductService.AddPurchasedProduct(_purchasedProduct1);
+						//_purchasedProductsList.Add(_purchasedProduct1);
+						Snackbar.Add("Added products to pay", Severity.Success);
+						ProductService.UpdateProductStock(element,_purchasedProduct.Amount);
+
+					}
 				}
 			}
 		}
+		else
+		{
+			Snackbar.Add("Please, introduce an appropiate amount", Severity.Warning);
+		}
+
 	}
 
 
