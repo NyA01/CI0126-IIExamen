@@ -1,55 +1,153 @@
 ﻿@using Domain.Products.Entities
 @using Domain.Products.Repositories
 @using Application.Products
+@using Domain.PurchasedProducts.Entities;
+@using Domain.PurchasedProducts.Repositories;
+@using Application.PurchasedProducts;
+@using Application.PurchaseCalculator;
+
 @using System.Globalization
 @inject IProductService ProductService
+@inject IPurchasedProductService PurchaseProductService
+@inject IPurchaseCalculatorService PurchaseCalculatorService
 @inject ISnackbar Snackbar
 @inject NavigationManager nav
 @page "/"
 
-<MudText Align="Align.Center" Typo="Typo.h6" GutterBottom="true">Vending Machine</MudText>
+<MudText Align="Align.Center" Typo="Typo.h4" GutterBottom="true">Vending Machine</MudText>
+ <MudSpacer/> <MudSpacer/>
+<MudGrid>
+	<MudItem xs="6">
+		<MudText Align="Align.Center" Typo="Typo.h5">Available drinks</MudText>
+		<MudTable @ref="_tableAvailableDrinks" Items="@_productsList" Hover="true" Breakpoint="Breakpoint.Sm">
+			<HeaderContent>
+				<MudTh Style="text-align:justify-all">Stock</MudTh>
+				<MudTh Style="text-align:justify-all">Name</MudTh>
+				<MudTh Style="text-align:justify-all">Price</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+				<MudTd Style="text-align:justify-all" DataLabel="Stock">@context.Stock</MudTd>
+				<MudTd Style="text-align:justify-all" DataLabel="Name">@context.Name</MudTd>
+				<MudTd Style="text-align:justify-all" DataLabel="Price">@PriceFormat(context.Price)</MudTd>
+			</RowTemplate>
+		</MudTable>
+	</MudItem>
+	<MudItem xs="6">
+		<MudText Align="Align.Left" Typo="Typo.h5">Purchase products</MudText> <MudSpacer/> <MudSpacer/>
+	    <MudItem xs="2"><MudButton Disabled=true></MudButton></MudItem>
+		<MudForm @ref="_form">
+			 <MudItem xs="8">
+				<MudSelect typeof="int" @bind-Value="_productToPurchase.Name" Label="Drink name" Required="true" 
+				RequiredError="Choose a product" Variant="Variant.Outlined">
+					<MudSelectItem Value="@("Coca Cola")">Coca Cola</MudSelectItem>
+					<MudSelectItem Value="@("Pepsi")">Pepsi</MudSelectItem>
+					<MudSelectItem Value="@("Fanta")">Fanta</MudSelectItem>
+					<MudSelectItem Value="@("Sprite")">Sprite</MudSelectItem>
+				</MudSelect>
+             </MudItem>
+			 <MudItem xs="2"><MudButton Disabled=true></MudButton></MudItem>
+			 <MudItem xs="8">
+				<MudNumericField @bind-Value="_productToPurchase.Amount" Min="1" Label="Enter the amount of products" 
+				Variant="Variant.Outlined"  Required="true" RequiredError="Required field"></MudNumericField>
+             </MudItem>
+        </MudForm>
+		<MudItem xs="2"><MudButton Disabled=true></MudButton></MudItem>
+		<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="AddProductsToPurchase" Color="Color.Secondary">Add to pay</MudButton></MudToolBar>
+	</MudItem>
+	<br>
+	<MudItem xs="6">
+		<MudText Align="Align.Center" Typo="Typo.h5">Purchased Products</MudText>
+		<MudTable @ref="_tablePurchasedProducs" Items="@_purchasedProductsList" Hover="true" Breakpoint="Breakpoint.Sm">
+			<HeaderContent>
+				<MudTh Style="text-align:justify-all">Amount</MudTh>
+				<MudTh Style="text-align:justify-all">Name</MudTh>
+				<MudTh Style="text-align:justify-all">Unit Price</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+				<MudTd Style="text-align:justify-all" DataLabel="Amount">@context.Amount</MudTd>
+				<MudTd Style="text-align:justify-all" DataLabel="Name">@context.Name</MudTd>
+				<MudTd Style="text-align:justify-all" DataLabel="Price">@PriceFormat(context.Price)</MudTd>
+			</RowTemplate>
+			<FooterContent>
+				<MudItem xs="24">
+					<MudField Variant="Variant.Text">Total: @_totalPurchaseAmount </MudField>
+				</MudItem>
+			</FooterContent>
+		</MudTable>
+	</MudItem>
 
-<MudTable @ref="_tableAvailableDrinks" Items="@_productsList" MultiSelection="true" @bind-SelectedItems="_selectedItems" Hover="true" Breakpoint="Breakpoint.Sm">
-	<HeaderContent>
-		<MudTh Style="text-align:justify-all">Stock</MudTh>
-		<MudTh Style="text-align:justify-all">Name</MudTh>
-		<MudTh Style="text-align:justify-all">Price</MudTh>
-	</HeaderContent>
-	<RowTemplate>
-		<MudTd Style="text-align:justify-all" DataLabel="Stock">@context.Stock</MudTd>
-        <MudTd Style="text-align:justify-all" DataLabel="Name">@context.Name</MudTd>
-        <MudTd Style="text-align:justify-all" DataLabel="Price">@PriceFormat(context.Price)</MudTd>
-	</RowTemplate>
-</MudTable>
-<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="BuySelectedItems" Color="Color.Secondary">Buy</MudButton></MudToolBar>
+</MudGrid>
 
 @code {
-
 	private MudTable<Product> _tableAvailableDrinks;
+	private MudTable<PurchasedProduct> _tablePurchasedProducs;
 	private IEnumerable<Product> _productsList;
-	private HashSet<Product> _selectedItems = new HashSet<Product>();
+	private IEnumerable<PurchasedProduct> _purchasedProductsList = new List<PurchasedProduct>();
 	private CultureInfo _cultureCR = CultureInfo.GetCultureInfo("es-CR");
-
+	private MudForm _form;
+	private PurchasedProduct _productToPurchase = new PurchasedProduct("",0,0.0,"Canned Soda");
+	private Product _product = new Product(0, "", 0.0, "");
+	private double _totalPurchaseAmount;
+	
 	protected override async Task OnInitializedAsync()
 	{
 		_productsList = ProductService.GetAllProducts();
 	}
 
-	private async Task BuySelectedItems()
+	private async Task AddProductsToPurchase()
 	{
-		if (_selectedItems.Length() > 0)
-		{
-			Snackbar.Add("successful purchase", Severity.Success);
-			foreach(Product element in _selectedItems)
-			{
-				ProductService.UpdateProductStock(element);
-			}
-			await Task.Delay(2000);
-			nav.NavigateTo($"/");
+		await _form.Validate();
+		if(_form.IsValid){
+			ValidateProductToPurchase();
+			_purchasedProductsList = PurchaseProductService.GetAllPurchasedProducts();
 		}
-		else
+		_totalPurchaseAmount = PurchaseCalculatorService.GetTotalPurchase(_purchasedProductsList);
+	}
+
+	private void ValidateProductToPurchase()
+	{
+		GetPriceByProductName(_productToPurchase);
+		ApproveProductToPurchase();
+	}
+
+	public void ApproveProductToPurchase()
+	{
+		foreach(Product element in _productsList)
 		{
-			Snackbar.Add("Please, select the product you wish to buy", Severity.Warning);
+			if(element.Name == _productToPurchase.Name)
+			{
+				if (element.Stock < _productToPurchase.Amount)
+				{
+					Snackbar.Add("The quantity introduced is greater than the quantity in stock", Severity.Warning);
+				}
+				else
+				{
+					AddProduct();
+					ProductService.UpdateProductStock(element,_productToPurchase.Amount);
+				}
+			}
+		}
+	}
+
+	public void AddProduct()
+	{
+		int amountProductPurchased = _productToPurchase.Amount;
+		string nameProductPurchased =_productToPurchase.Name;
+		double priceProductPurchased = _productToPurchase.Price;
+		string typeProductPurchased = "Canned Soda";
+		PurchasedProduct _purchasedProduct = new PurchasedProduct(nameProductPurchased,amountProductPurchased,priceProductPurchased,typeProductPurchased);
+		PurchaseProductService.AddPurchasedProduct(_purchasedProduct);
+		Snackbar.Add("Added products to pay", Severity.Success);
+	}
+
+	private void GetPriceByProductName(PurchasedProduct purchasedProduct)
+	{
+		foreach(Product item in _productsList)
+		{
+			if(item.Name == purchasedProduct.Name)
+			{
+				_productToPurchase.Price = item.Price;
+			}
 		}
 	}
 

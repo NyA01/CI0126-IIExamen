@@ -26,12 +26,12 @@ namespace Infrastructure.Products.Repositories
             return productList;
         }
 
-        public void UpdateProductStock(Product product)
+        public void UpdateProductStock(Product product, int amount)
         {
             IEnumerable<Product> productList = _dbContext.Products.Where(e => e.Name == product.Name).ToList();
             foreach(Product element in productList)
             {
-                element.Stock = product.Stock - 1;
+                element.Stock = product.Stock - amount;
             }
         }
     }

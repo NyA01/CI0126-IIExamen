@@ -1,4 +1,5 @@
 ﻿using Domain.Products.Repositories;
+using Domain.PurchasedProducts.Repositories;
 using Infrastructure.Products;
 using Infrastructure.Products.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ namespace Infrastructure
         {
             //services.AddDbContext<ProductDBContext>(options => options.UseSqlServer(connectionString));
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IPurchasedProductRepository, PurchasedProductRepository>();
 
             return services;
         }
