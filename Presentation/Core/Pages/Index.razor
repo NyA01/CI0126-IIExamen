@@ -35,7 +35,7 @@
 	    <MudItem xs="2"><MudButton Disabled=true></MudButton></MudItem>
 		<MudForm @ref="_form">
 			 <MudItem xs="8">
-				<MudSelect typeof="int" @bind-Value="_purchasedProduct.Name" Label="Drink name" Required="true" 
+				<MudSelect typeof="int" @bind-Value="_productToPurchase.Name" Label="Drink name" Required="true" 
 				RequiredError="Choose a product" Variant="Variant.Outlined">
 					<MudSelectItem Value="@("Coca Cola")">Coca Cola</MudSelectItem>
 					<MudSelectItem Value="@("Pepsi")">Pepsi</MudSelectItem>
@@ -45,7 +45,7 @@
              </MudItem>
 			 <MudItem xs="2"><MudButton Disabled=true></MudButton></MudItem>
 			 <MudItem xs="8">
-				<MudNumericField @bind-Value="_purchasedProduct.Amount" Min="1" Label="Enter the amount of products" Variant="Variant.Outlined"></MudNumericField>
+				<MudNumericField @bind-Value="_productToPurchase.Amount" Min="1" Label="Enter the amount of products" Variant="Variant.Outlined"></MudNumericField>
              </MudItem>
         </MudForm>
 		<MudItem xs="2"><MudButton Disabled=true></MudButton></MudItem>
@@ -70,8 +70,6 @@
 
 </MudGrid>
 
-
-
 @code {
 	private MudTable<Product> _tableAvailableDrinks;
 	private MudTable<PurchasedProduct> _tablePurchasedProducs;
@@ -79,7 +77,7 @@
 	private IEnumerable<PurchasedProduct> _purchasedProductsList = new List<PurchasedProduct>();
 	private CultureInfo _cultureCR = CultureInfo.GetCultureInfo("es-CR");
 	private MudForm _form;
-	private PurchasedProduct _purchasedProduct = new PurchasedProduct("",0,0.0,"Canned Soda");
+	private PurchasedProduct _productToPurchase = new PurchasedProduct("",0,0.0,"Canned Soda");
 	private Product _product = new Product(0, "", 0.0, "");
 
 	protected override async Task OnInitializedAsync()
@@ -97,40 +95,46 @@
 
 	private void ValidateProductToPurchase()
 	{
-		GetPriceByProductName(_purchasedProduct);
-		if(_purchasedProduct.Amount != 0)
+		GetPriceByProductName(_productToPurchase);
+		if(_productToPurchase.Amount != 0)
 		{
-			foreach(Product element in _productsList)
-			{
-				if(element.Name == _purchasedProduct.Name)
-				{
-					if (element.Stock < _purchasedProduct.Amount)
-					{
-						Snackbar.Add("the quantity introduced is greater than the quantity in stock", Severity.Warning);
-					}
-					else
-					{
-						int amountProductPurchased = _purchasedProduct.Amount;
-						string nameProductPurchased =_purchasedProduct.Name;
-						double priceProductPurchased = _purchasedProduct.Price;
-						string typeProductPurchased = "Canned Soda";
-						PurchasedProduct _purchasedProduct1 = new PurchasedProduct(nameProductPurchased,amountProductPurchased,priceProductPurchased,typeProductPurchased);
-						PurchaseProductService.AddPurchasedProduct(_purchasedProduct1);
-						//_purchasedProductsList.Add(_purchasedProduct1);
-						Snackbar.Add("Added products to pay", Severity.Success);
-						ProductService.UpdateProductStock(element,_purchasedProduct.Amount);
-
-					}
-				}
-			}
+			ApproveProductToPurchase();
 		}
 		else
 		{
 			Snackbar.Add("Please, introduce an appropiate amount", Severity.Warning);
 		}
-
 	}
 
+	public void ApproveProductToPurchase()
+	{
+		foreach(Product element in _productsList)
+		{
+			if(element.Name == _productToPurchase.Name)
+			{
+				if (element.Stock < _productToPurchase.Amount)
+				{
+					Snackbar.Add("The quantity introduced is greater than the quantity in stock", Severity.Warning);
+				}
+				else
+				{
+					AddProduct();
+					ProductService.UpdateProductStock(element,_productToPurchase.Amount);
+				}
+			}
+		}
+	}
+
+	public void AddProduct()
+	{
+		int amountProductPurchased = _productToPurchase.Amount;
+		string nameProductPurchased =_productToPurchase.Name;
+		double priceProductPurchased = _productToPurchase.Price;
+		string typeProductPurchased = "Canned Soda";
+		PurchasedProduct _purchasedProduct = new PurchasedProduct(nameProductPurchased,amountProductPurchased,priceProductPurchased,typeProductPurchased);
+		PurchaseProductService.AddPurchasedProduct(_purchasedProduct);
+		Snackbar.Add("Added products to pay", Severity.Success);
+	}
 
 	private void GetPriceByProductName(PurchasedProduct purchasedProduct)
 	{
@@ -138,7 +142,7 @@
 		{
 			if(item.Name == purchasedProduct.Name)
 			{
-				_purchasedProduct.Price = item.Price;
+				_productToPurchase.Price = item.Price;
 			}
 		}
 	}
