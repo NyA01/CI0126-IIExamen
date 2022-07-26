@@ -92,7 +92,7 @@
 		<MudGrid>
 			<MudItem xs="5">
 				<MudForm @ref="_formPayment">
-				<MudSelect Dense="true" T="double" Label="Insert Coins" Variant="Variant.Outlined" TextChanged="AddPurchaseCoins">
+				<MudSelect Dense="true" T="double" Label="Insert cash" Variant="Variant.Outlined" TextChanged="AddPurchaseCoins">
 					@foreach (var state in _coinsList) {
 						<MudSelectItem T="double" Value="@state.Value">
 							@state.Value
@@ -108,12 +108,20 @@
 		 <MudItem xs="4"><MudButton Disabled=true></MudButton></MudItem>
 		<MudGrid>
 			<MudItem xs="3">
-				<MudText Variant="Variant.Outlined"> Total: @_totalUserPayment</MudText>
+				<MudText Variant="Variant.Outlined"> Cash inserted: @_totalUserPayment</MudText>
 			</MudItem>
 		</MudGrid>
 		<MudItem xs="4">
 			<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="PurchasePayment" Color="Color.Secondary">Pay</MudButton></MudToolBar>
 		</MudItem>
+		 <MudItem xs="4"><MudButton Disabled=true></MudButton></MudItem>
+			@if(_totalUserPayment != 0){
+				<MudGrid>
+					<MudItem xs="3">
+						<MudText Variant="Variant.Outlined"> Your exchange is: @_exchangePayment Colones</MudText>
+					</MudItem>
+				</MudGrid>
+			}
 	</MudItem>
 	</MudGrid>
 	}
@@ -136,6 +144,7 @@
 	private double _totalPurchaseAmount;
 	private double _coinValue;
 	private double _totalUserPayment;
+	private double _exchangePayment;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -235,6 +244,7 @@
 	private void ValidateExchange()
 	{
 		double exchangeUserPayment = _totalUserPayment - _totalPurchaseAmount;
+		_exchangePayment = exchangeUserPayment;
 		if (exchangeUserPayment != 0)
 		{
 			_exchangeCoinsList = CurrencyService.GetAllCoins().ToList();
