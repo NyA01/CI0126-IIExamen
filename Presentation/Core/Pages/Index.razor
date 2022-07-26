@@ -4,10 +4,12 @@
 @using Domain.PurchasedProducts.Entities;
 @using Domain.PurchasedProducts.Repositories;
 @using Application.PurchasedProducts;
+@using Application.PurchaseCalculator;
 
 @using System.Globalization
 @inject IProductService ProductService
 @inject IPurchasedProductService PurchaseProductService
+@inject IPurchaseCalculatorService PurchaseCalculatorService
 @inject ISnackbar Snackbar
 @inject NavigationManager nav
 @page "/"
@@ -66,6 +68,11 @@
 				<MudTd Style="text-align:justify-all" DataLabel="Name">@context.Name</MudTd>
 				<MudTd Style="text-align:justify-all" DataLabel="Price">@PriceFormat(context.Price)</MudTd>
 			</RowTemplate>
+			<FooterContent>
+				<MudItem xs="24">
+					<MudField Variant="Variant.Text">Total: @_totalPurchaseAmount </MudField>
+				</MudItem>
+			</FooterContent>
 		</MudTable>
 	</MudItem>
 
@@ -80,7 +87,8 @@
 	private MudForm _form;
 	private PurchasedProduct _productToPurchase = new PurchasedProduct("",0,0.0,"Canned Soda");
 	private Product _product = new Product(0, "", 0.0, "");
-
+	private double _totalPurchaseAmount;
+	
 	protected override async Task OnInitializedAsync()
 	{
 		_productsList = ProductService.GetAllProducts();
@@ -92,22 +100,14 @@
 		if(_form.IsValid){
 			ValidateProductToPurchase();
 			_purchasedProductsList = PurchaseProductService.GetAllPurchasedProducts();
-			await Task.Delay(2000);
-			nav.NavigateTo($"/");
 		}
+		_totalPurchaseAmount = PurchaseCalculatorService.GetTotalPurchase(_purchasedProductsList);
 	}
 
 	private void ValidateProductToPurchase()
 	{
 		GetPriceByProductName(_productToPurchase);
-		if(_productToPurchase.Amount != 0)
-		{
-			ApproveProductToPurchase();
-		}
-		else
-		{
-			Snackbar.Add("Please, introduce an appropiate amount", Severity.Warning);
-		}
+		ApproveProductToPurchase();
 	}
 
 	public void ApproveProductToPurchase()
