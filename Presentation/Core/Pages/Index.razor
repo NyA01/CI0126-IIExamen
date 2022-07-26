@@ -45,7 +45,8 @@
              </MudItem>
 			 <MudItem xs="2"><MudButton Disabled=true></MudButton></MudItem>
 			 <MudItem xs="8">
-				<MudNumericField @bind-Value="_productToPurchase.Amount" Min="1" Label="Enter the amount of products" Variant="Variant.Outlined"></MudNumericField>
+				<MudNumericField @bind-Value="_productToPurchase.Amount" Min="1" Label="Enter the amount of products" 
+				Variant="Variant.Outlined"  Required="true" RequiredError="Required field"></MudNumericField>
              </MudItem>
         </MudForm>
 		<MudItem xs="2"><MudButton Disabled=true></MudButton></MudItem>
@@ -87,10 +88,13 @@
 
 	private async Task AddProductsToPurchase()
 	{
-		ValidateProductToPurchase();
-		_purchasedProductsList = PurchaseProductService.GetAllPurchasedProducts();
-		await Task.Delay(2000);
-		nav.NavigateTo($"/");
+		await _form.Validate();
+		if(_form.IsValid){
+			ValidateProductToPurchase();
+			_purchasedProductsList = PurchaseProductService.GetAllPurchasedProducts();
+			await Task.Delay(2000);
+			nav.NavigateTo($"/");
+		}
 	}
 
 	private void ValidateProductToPurchase()
