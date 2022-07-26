@@ -1,4 +1,5 @@
-﻿using Domain.PurchasedProducts.Entities;
+﻿using Domain.Currencies.Entities;
+using Domain.PurchasedProducts.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,5 +22,16 @@ namespace Application.PurchaseCalculator.Implementations
 			}
 			return totalPurchase;
 		}
-	}
+
+        public double GetUserPayment(IList<Currency> userMoney)
+        {
+			double totalAmountUserMoney = 0;
+			foreach (Currency item in userMoney)
+			{
+				double userMoneyAmount = +item.Amount * item.Value;
+				totalAmountUserMoney = userMoneyAmount + totalAmountUserMoney;
+			}
+			return totalAmountUserMoney;
+		}
+    }
 }
