@@ -4,6 +4,8 @@ using Application.PurchaseCalculator;
 using Application.PurchaseCalculator.Implementations;
 using Application.PurchasedProducts;
 using Application.PurchasedProducts.Implementations;
+using Application.Currencies;
+using Application.Currencies.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application
@@ -15,6 +17,7 @@ namespace Application
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IPurchasedProductService, PurchasedProductService>();
             services.AddTransient<IPurchaseCalculatorService, PurchaseCalculatorService>();
+            services.AddTransient<ICurrencyService, CurrencyService>();
             return services;
         }
     }
