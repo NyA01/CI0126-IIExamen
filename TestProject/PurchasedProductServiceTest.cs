@@ -24,7 +24,7 @@ namespace TestProject
         PurchasedProduct newPurchasedProduct = new PurchasedProduct("Pepsi", 3, 600, "Canned Soda");
 
         [Fact]
-        public void GetAllPurchasedProducts()
+        public void GetAllPurchasedProductsTest()
         {
             //arrange
             var mockPurchasedProductRepository = new Mock<IPurchasedProductRepository>();
@@ -40,7 +40,7 @@ namespace TestProject
         }
 
         [Fact]
-        public void AddPurchasedProduct()
+        public void AddPurchasedProductTest()
         {
             //arrange
             var mockPurchasedProductRepository = new Mock<IPurchasedProductRepository>();

@@ -24,8 +24,10 @@ namespace TestProject
             new Product(15,"Sprite", 725, "Canned Soda"),
         };
 
+        Product newProduct = new Product(5, "Big Cola", 650, "Canned Soda");
+
         [Fact]
-        public void GetAllProducts()
+        public void GetAllProductsTest()
         {
             //arrange
             var mockProductRepository = new Mock<IProductRepository>();
@@ -39,6 +41,21 @@ namespace TestProject
             mockProductRepository.Verify(repo => repo.GetAllProducts(),Times.Once());
             productsListTest.Count().Should().Equals(4);
 
+        }
+
+        [Fact]
+        public void UpdateProductStockTest()
+        {
+            //arrange
+            var mockProductRepository = new Mock<IProductRepository>();
+            var productService = new ProductService(mockProductRepository.Object);
+            mockProductRepository.Setup(repo => repo.UpdateProductStock(newProduct,4));
+
+            //act
+            productService.UpdateProductStock(newProduct, 4);
+
+            //assert
+            mockProductRepository.Verify(repo => repo.UpdateProductStock(newProduct, 4), Times.Once());
         }
     }
 }
