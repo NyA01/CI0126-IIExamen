@@ -105,7 +105,7 @@
 		 <MudItem xs="4"><MudButton Disabled=true></MudButton></MudItem>
 		<MudGrid>
 			<MudItem xs="3">
-				<MudText Variant="Variant.Outlined"> Total: @_totalPurchaseAmount</MudText>
+				<MudText Variant="Variant.Outlined"> Total: @_totalUserPayment</MudText>
 			</MudItem>
 		</MudGrid>
 		<MudItem xs="4">
@@ -124,16 +124,18 @@
 	private MudForm _formPayment;
 	private PurchasedProduct _productToPurchase = new PurchasedProduct("",0,0.0,"Canned Soda");
 	private Product _product = new Product(0, "", 0.0, "");
-	//private Currency _coin = new Currency(0, "Colones", "CR", 0.0);
-	private IEnumerable<Currency> _coinsList = new List<Currency>();
+	private Currency _bill = new Currency(1, "Colones", "CR", 1000);
+	private IList<Currency> _coinsList = new List<Currency>();
 	private IList<Currency> _userCoinsList = new List<Currency>();
 	private double _totalPurchaseAmount;
 	private double _coinValue;
+	private double _totalUserPayment;
 
 	protected override async Task OnInitializedAsync()
 	{
 		_productsList = ProductService.GetAllProducts();
-		_coinsList = CurrencyService.GetAllCoins();
+		_coinsList = CurrencyService.GetAllCoins().ToList();
+		_coinsList.Add(_bill);
 	}
 
 	private async Task AddProductsToPurchase()
@@ -209,6 +211,7 @@
 			Currency _coin = new Currency(amountCoins,nameCoin,countryCoin,valueCoin);
 			_userCoinsList.Add(_coin);
 		}
+		_totalUserPayment = PurchaseCalculatorService.GetUserPayment(_userCoinsList);
 	}
 
 	private string PriceFormat(double price)
