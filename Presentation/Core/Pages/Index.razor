@@ -141,6 +141,7 @@
 	private IList<Currency> _coinsList = new List<Currency>();
 	private IList<Currency> _userCoinsList = new List<Currency>();
 	private IList<Currency> _exchangeCoinsList = new List<Currency>();
+	private IEnumerable<Currency> _userExchangeCoinsList = new List<Currency>();
 	private double _totalPurchaseAmount;
 	private double _coinValue;
 	private double _totalUserPayment;
@@ -254,6 +255,9 @@
 				Snackbar.Add("Out of order", Severity.Error);
 			}else
 			{
+				_userExchangeCoinsList = PurchaseCalculatorService.GetUserExchange(exchangeUserPayment, _exchangeCoinsList);
+				//TODO UPDATE
+
 				Snackbar.Add("Successful Purchase", Severity.Success);
 			}
 		}
