@@ -70,6 +70,13 @@
 
 	private async Task AddProductsToPurchase()
 	{
+		ValidateProductToPurchase();
+		await Task.Delay(2000);
+		nav.NavigateTo($"/");
+	}
+
+	private void ValidateProductToPurchase()
+	{
 		GetPriceByProductName(_purchasedProduct);
 		foreach(Product element in _productsList)
 		{
@@ -77,7 +84,7 @@
 			{
 				if (element.Stock < _purchasedProduct.Amount)
 				{
-					Snackbar.Add("the quantity entered is greater than the quantity in stock", Severity.Warning);
+					Snackbar.Add("the quantity introduced is greater than the quantity in stock", Severity.Warning);
 				}
 				else
 				{
@@ -87,9 +94,8 @@
 				}
 			}
 		}
-		await Task.Delay(2000);
-		nav.NavigateTo($"/");
 	}
+
 
 	private void GetPriceByProductName(PurchasedProduct purchasedProduct)
 	{
