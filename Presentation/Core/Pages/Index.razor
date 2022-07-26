@@ -109,7 +109,7 @@
 			</MudItem>
 		</MudGrid>
 		<MudItem xs="4">
-			<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="AddProductsToPurchase" Color="Color.Secondary">Pay</MudButton></MudToolBar>
+			<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="PurchasePayment" Color="Color.Secondary">Pay</MudButton></MudToolBar>
 		</MudItem>
 	</MudItem>
 </MudGrid>
@@ -127,6 +127,7 @@
 	private Currency _bill = new Currency(1, "Colones", "CR", 1000);
 	private IList<Currency> _coinsList = new List<Currency>();
 	private IList<Currency> _userCoinsList = new List<Currency>();
+	private IList<Currency> _exchangeCoinsList = new List<Currency>();
 	private double _totalPurchaseAmount;
 	private double _coinValue;
 	private double _totalUserPayment;
@@ -154,7 +155,7 @@
 		ApproveProductToPurchase();
 	}
 
-	public void ApproveProductToPurchase()
+	private void ApproveProductToPurchase()
 	{
 		foreach(Product element in _productsList)
 		{
@@ -173,7 +174,7 @@
 		}
 	}
 
-	public void AddProduct()
+	private void AddProduct()
 	{
 		int amountProductPurchased = _productToPurchase.Amount;
 		string nameProductPurchased =_productToPurchase.Name;
@@ -197,10 +198,10 @@
 
 	private void AddPurchaseCoins(string selected) {
 		_coinValue = Double.Parse(selected);
-		
+
 	}
 
-	public async Task AddCoinsForPurchase()
+	private async Task AddCoinsForPurchase()
 	{
 		await _formPayment.Validate();
 		if(_formPayment.IsValid){
@@ -211,7 +212,36 @@
 			Currency _coin = new Currency(amountCoins,nameCoin,countryCoin,valueCoin);
 			_userCoinsList.Add(_coin);
 		}
-		_totalUserPayment = PurchaseCalculatorService.GetUserPayment(_userCoinsList);
+		_totalUserPayment = PurchaseCalculatorService.GetTotalAmount(_userCoinsList);
+	}
+
+	private void PurchasePayment()
+	{
+		if (_totalUserPayment >= _totalPurchaseAmount)
+		{
+			ValidateExchange();
+		}else
+		{
+			Snackbar.Add("The money introduced is less than the total purchase amount", Severity.Error);
+		}
+	}
+
+
+	private void ValidateExchange()
+	{
+		double exchangeUserPayment = _totalUserPayment - _totalPurchaseAmount;
+		if (exchangeUserPayment != 0)
+		{
+			_exchangeCoinsList = CurrencyService.GetAllCoins().ToList();
+			double exchangeAmount = PurchaseCalculatorService.GetTotalAmount(_exchangeCoinsList);
+			if (exchangeUserPayment > exchangeAmount)
+			{
+				Snackbar.Add("Out of order", Severity.Error);
+			}else
+			{
+				Snackbar.Add("Successful Purchase", Severity.Success);
+			}
+		}
 	}
 
 	private string PriceFormat(double price)

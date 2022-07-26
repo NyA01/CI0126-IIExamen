@@ -23,15 +23,15 @@ namespace Application.PurchaseCalculator.Implementations
 			return totalPurchase;
 		}
 
-        public double GetUserPayment(IList<Currency> userMoney)
+        public double GetTotalAmount(IList<Currency> moneyList)
         {
-			double totalAmountUserMoney = 0;
-			foreach (Currency item in userMoney)
+			double totalAmount = 0;
+			foreach (Currency item in moneyList)
 			{
-				double userMoneyAmount = +item.Amount * item.Value;
-				totalAmountUserMoney = userMoneyAmount + totalAmountUserMoney;
+				double amount = +item.Amount * item.Value;
+				totalAmount = amount + totalAmount;
 			}
-			return totalAmountUserMoney;
+			return totalAmount;
 		}
     }
 }

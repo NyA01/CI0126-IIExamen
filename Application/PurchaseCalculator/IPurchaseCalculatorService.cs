@@ -11,7 +11,7 @@ namespace Application.PurchaseCalculator
     public interface IPurchaseCalculatorService
     {
         public double GetTotalPurchase(IEnumerable<PurchasedProduct> purchasedProducts);
-        public double GetUserPayment(IList<Currency> userMoney);
+        public double GetTotalAmount(IList<Currency> moneyList);
     }
 }
 
