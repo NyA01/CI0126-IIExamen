@@ -1,15 +1,23 @@
-﻿@using Domain.Products.Entities
+﻿
+@using Domain.Products.Entities
 @using Domain.Products.Repositories
+
+@using Domain.PurchasedProducts.Entities
+@using Domain.PurchasedProducts.Repositories
+
+@using Domain.Currencies.Entities
+@using Domain.Currencies.Repositories
+
 @using Application.Products
-@using Domain.PurchasedProducts.Entities;
-@using Domain.PurchasedProducts.Repositories;
-@using Application.PurchasedProducts;
-@using Application.PurchaseCalculator;
+@using Application.PurchasedProducts
+@using Application.PurchaseCalculator
+@using Application.Currencies
 
 @using System.Globalization
 @inject IProductService ProductService
 @inject IPurchasedProductService PurchaseProductService
 @inject IPurchaseCalculatorService PurchaseCalculatorService
+@inject ICurrencyService CurrencyService
 @inject ISnackbar Snackbar
 @inject NavigationManager nav
 @page "/"
@@ -35,7 +43,7 @@
 	<MudItem xs="6">
 		<MudText Align="Align.Left" Typo="Typo.h5">Purchase products</MudText> <MudSpacer/> <MudSpacer/>
 	    <MudItem xs="2"><MudButton Disabled=true></MudButton></MudItem>
-		<MudForm @ref="_form">
+		<MudForm @ref="_formPurchaseProducts">
 			 <MudItem xs="8">
 				<MudSelect typeof="int" @bind-Value="_productToPurchase.Name" Label="Drink name" Required="true" 
 				RequiredError="Choose a product" Variant="Variant.Outlined">
@@ -75,7 +83,35 @@
 			</FooterContent>
 		</MudTable>
 	</MudItem>
-
+	<MudItem xs="6">
+		<MudText Align="Align.Left" Typo="Typo.h5">Payment</MudText> <MudSpacer/> <MudSpacer/>
+	    <MudItem xs="4"><MudButton Disabled=true></MudButton></MudItem>
+		<MudGrid>
+			<MudItem xs="5">
+				<MudForm @ref="_formPayment">
+				<MudSelect Dense="true" T="double" Label="Insert Coins" Variant="Variant.Outlined" TextChanged="AddPurchaseCoins">
+					@foreach (var state in _coinsList) {
+						<MudSelectItem T="double" Value="@state.Value">
+							@state.Value
+						</MudSelectItem>
+					}   
+				</MudSelect>
+				</MudForm>
+            </MudItem>
+			<MudItem xs="2">
+				<MudFab Icon="@Icons.Filled.Add" Color="@Color.Secondary" Class="px-2" Size="Size.Small" OnClick="AddCoinsForPurchase"/>
+			</MudItem>
+		</MudGrid>
+		 <MudItem xs="4"><MudButton Disabled=true></MudButton></MudItem>
+		<MudGrid>
+			<MudItem xs="3">
+				<MudText Variant="Variant.Outlined"> Total: @_totalPurchaseAmount</MudText>
+			</MudItem>
+		</MudGrid>
+		<MudItem xs="4">
+			<MudToolBar DisableGutters="true" Class="gap-4"><MudButton Variant="Variant.Filled" OnClick="AddProductsToPurchase" Color="Color.Secondary">Pay</MudButton></MudToolBar>
+		</MudItem>
+	</MudItem>
 </MudGrid>
 
 @code {
@@ -84,20 +120,26 @@
 	private IEnumerable<Product> _productsList;
 	private IEnumerable<PurchasedProduct> _purchasedProductsList = new List<PurchasedProduct>();
 	private CultureInfo _cultureCR = CultureInfo.GetCultureInfo("es-CR");
-	private MudForm _form;
+	private MudForm _formPurchaseProducts;
+	private MudForm _formPayment;
 	private PurchasedProduct _productToPurchase = new PurchasedProduct("",0,0.0,"Canned Soda");
 	private Product _product = new Product(0, "", 0.0, "");
+	//private Currency _coin = new Currency(0, "Colones", "CR", 0.0);
+	private IEnumerable<Currency> _coinsList = new List<Currency>();
+	private IList<Currency> _userCoinsList = new List<Currency>();
 	private double _totalPurchaseAmount;
-	
+	private double _coinValue;
+
 	protected override async Task OnInitializedAsync()
 	{
 		_productsList = ProductService.GetAllProducts();
+		_coinsList = CurrencyService.GetAllCoins();
 	}
 
 	private async Task AddProductsToPurchase()
 	{
-		await _form.Validate();
-		if(_form.IsValid){
+		await _formPurchaseProducts.Validate();
+		if(_formPurchaseProducts.IsValid){
 			ValidateProductToPurchase();
 			_purchasedProductsList = PurchaseProductService.GetAllPurchasedProducts();
 		}
@@ -148,6 +190,24 @@
 			{
 				_productToPurchase.Price = item.Price;
 			}
+		}
+	}
+
+	private void AddPurchaseCoins(string selected) {
+		_coinValue = Double.Parse(selected);
+		
+	}
+
+	public async Task AddCoinsForPurchase()
+	{
+		await _formPayment.Validate();
+		if(_formPayment.IsValid){
+			int amountCoins = 1;
+			string nameCoin="Colones";
+			string countryCoin = "CR";
+			double valueCoin = _coinValue;
+			Currency _coin = new Currency(amountCoins,nameCoin,countryCoin,valueCoin);
+			_userCoinsList.Add(_coin);
 		}
 	}
 
