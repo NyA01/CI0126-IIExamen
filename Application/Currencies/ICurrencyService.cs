@@ -10,5 +10,6 @@ namespace Application.Currencies
     public interface ICurrencyService
     {
         IEnumerable<Currency> GetAllCoins();
+        void UpdateCurrencyStock(Currency currency, int amount);
     }
 }

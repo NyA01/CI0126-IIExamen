@@ -1,18 +1,13 @@
-﻿
-@using Domain.Products.Entities
+﻿@using Domain.Products.Entities
 @using Domain.Products.Repositories
-
 @using Domain.PurchasedProducts.Entities
 @using Domain.PurchasedProducts.Repositories
-
 @using Domain.Currencies.Entities
 @using Domain.Currencies.Repositories
-
 @using Application.Products
 @using Application.PurchasedProducts
 @using Application.PurchaseCalculator
 @using Application.Currencies
-
 @using System.Globalization
 @inject IProductService ProductService
 @inject IPurchasedProductService PurchaseProductService
@@ -117,8 +112,16 @@
 		 <MudItem xs="4"><MudButton Disabled=true></MudButton></MudItem>
 			@if(_totalUserPayment != 0){
 				<MudGrid>
-					<MudItem xs="3">
+					<MudItem xs="8">
 						<MudText Variant="Variant.Outlined"> Your exchange is: @_exchangePayment Colones</MudText>
+						 <MudTreeView T="string">
+                            <MudTreeViewItem Value="@("Breakdown")">
+                                @foreach (var item in _userExchangeCoinsList)
+                                { 
+                                    <MudTreeViewItem Value="@(item.Amount+" coin of "+ PriceFormat(item.Value))" />
+                                }
+                            </MudTreeViewItem>
+                         </MudTreeView>
 					</MudItem>
 				</MudGrid>
 			}
@@ -213,7 +216,6 @@
 
 	private void AddPurchaseCoins(string selected) {
 		_coinValue = Double.Parse(selected);
-
 	}
 
 	private async Task AddCoinsForPurchase()
@@ -256,8 +258,10 @@
 			}else
 			{
 				_userExchangeCoinsList = PurchaseCalculatorService.GetUserExchange(exchangeUserPayment, _exchangeCoinsList);
-				//TODO UPDATE
-
+				foreach (Currency item in _userExchangeCoinsList)
+				{
+					CurrencyService.UpdateCurrencyStock(item,item.Amount);
+				}
 				Snackbar.Add("Successful Purchase", Severity.Success);
 			}
 		}

@@ -25,5 +25,14 @@ namespace Infrastructure.Currencies.Repositories
             IEnumerable<Currency> productList = _dbContext.Coins.Where(e => e.Name == "Colones").ToList();
             return productList;
         }
+
+        public void UpdateCurrencyStock(Currency currency, int amount)
+        {
+            IEnumerable<Currency> currencyList = _dbContext.Coins.Where(e => e.Value == currency.Value).ToList();
+            foreach (Currency element in currencyList)
+            {
+                element.Amount= currency.Amount - amount;
+            }
+        }
     }
 }

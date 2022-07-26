@@ -10,5 +10,6 @@ namespace Domain.Currencies.Repositories
     public interface ICurrencyRepository
     {
         IEnumerable<Currency> GetAllCoins();
+        void UpdateCurrencyStock(Currency currency, int amount);
     }
 }

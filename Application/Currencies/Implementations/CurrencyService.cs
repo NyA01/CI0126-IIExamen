@@ -20,5 +20,10 @@ namespace Application.Currencies.Implementations
         {
             return _currencyRepository.GetAllCoins(); ;
         }
+
+        public void UpdateCurrencyStock(Currency currency, int amount)
+        {
+            _currencyRepository.UpdateCurrencyStock(currency, amount);
+        }
     }
 }
