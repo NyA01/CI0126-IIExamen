@@ -71,13 +71,20 @@
 	private async Task AddProductsToPurchase()
 	{
 		GetPriceByProductName(_purchasedProduct);
-		PurchaseProductService.AddPurchasedProduct(_purchasedProduct);
-		Snackbar.Add("Added products to pay", Severity.Success);
 		foreach(Product element in _productsList)
 		{
 			if(element.Name == _purchasedProduct.Name)
 			{
-				ProductService.UpdateProductStock(element,_purchasedProduct.Amount);
+				if (element.Stock < _purchasedProduct.Amount)
+				{
+					Snackbar.Add("the quantity entered is greater than the quantity in stock", Severity.Warning);
+				}
+				else
+				{
+					PurchaseProductService.AddPurchasedProduct(_purchasedProduct);
+					Snackbar.Add("Added products to pay", Severity.Success);
+					ProductService.UpdateProductStock(element,_purchasedProduct.Amount);
+				}
 			}
 		}
 		await Task.Delay(2000);
