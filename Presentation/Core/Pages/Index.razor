@@ -119,7 +119,6 @@
 	<MudItem xs="4"><MudButton Disabled=true></MudButton></MudItem>
 	<MudGrid>
 		<MudItem xs="8">
-			<MudText Variant="Variant.Outlined"> exchange is: @_exhangeStock Colones</MudText>
 			<MudText Variant="Variant.Outlined"> Your exchange is: @_exchangePayment Colones</MudText>
 				<MudTreeView T="string">
                 <MudTreeViewItem Value="@("Breakdown")">
@@ -131,11 +130,7 @@
                 </MudTreeView>
 		</MudItem>
 	</MudGrid>
-}
-	
-	
-	
-	
+}	
 
 @code {
 	private MudTable<Product> _tableAvailableDrinks;
@@ -246,22 +241,28 @@
 		if (_totalUserPayment >= _totalPurchaseAmount)
 		{
 			ValidateExchange();
-			foreach(PurchasedProduct item in _purchasedProductsList){
-				PurchaseProductService.RemovePurchasedProduct(item);
-			}
-			_purchasedProductsList = PurchaseProductService.GetAllPurchasedProducts();
-			_loading = true;
-			_totalUserPayment = 0;
-			_userCoinsList.Clear();
-			await ReloadPage();
-			_exchangePayment= 0;
-			_userExchangeCoinsList.Clear();
-			_loading = false;
-			await ReloadPage();
+			await Reset();
 		}else
 		{
 			Snackbar.Add("The money introduced is less than the total purchase amount", Severity.Error);
 		}
+	}
+
+	private async Task Reset()
+	{
+		foreach(PurchasedProduct item in _purchasedProductsList)
+		{
+			PurchaseProductService.RemovePurchasedProduct(item);
+		}
+		_purchasedProductsList = PurchaseProductService.GetAllPurchasedProducts();
+		_loading = true;
+		_totalUserPayment = 0;
+		_userCoinsList.Clear();
+		await ReloadPage();
+		_exchangePayment= 0;
+		_userExchangeCoinsList.Clear();
+		_loading = false;
+		await ReloadPage();
 	}
 
 	private async Task ReloadPage()
@@ -270,7 +271,6 @@
 		nav.NavigateTo($"/");
 	}
 
-
 	private void ValidateExchange()
 	{
 		double exchangeUserPayment = _totalUserPayment - _totalPurchaseAmount;
@@ -278,7 +278,6 @@
 		{
 			_exchangeCoinsList = CurrencyService.GetAllCoins().ToList();
 			double exchangeAmount = PurchaseCalculatorService.GetTotalAmount(_exchangeCoinsList);
-			_exhangeStock = exchangeAmount;
 			if (exchangeUserPayment > exchangeAmount)
 			{
 				Snackbar.Add("Out of order", Severity.Error);
