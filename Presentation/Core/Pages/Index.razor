@@ -119,6 +119,7 @@
 	<MudItem xs="4"><MudButton Disabled=true></MudButton></MudItem>
 	<MudGrid>
 		<MudItem xs="8">
+			<MudText Variant="Variant.Outlined"> exchange is: @_exhangeStock Colones</MudText>
 			<MudText Variant="Variant.Outlined"> Your exchange is: @_exchangePayment Colones</MudText>
 				<MudTreeView T="string">
                 <MudTreeViewItem Value="@("Breakdown")">
@@ -150,12 +151,13 @@
 	private IList<Currency> _coinsList = new List<Currency>();
 	private IList<Currency> _userCoinsList = new List<Currency>();
 	private IList<Currency> _exchangeCoinsList = new List<Currency>();
-	private IEnumerable<Currency> _userExchangeCoinsList = new List<Currency>();
+	private IList<Currency> _userExchangeCoinsList = new List<Currency>();
 	private double _totalPurchaseAmount;
 	private double _coinValue;
 	private double _totalUserPayment;
 	private double _exchangePayment;
 	private bool _loading = false;
+	private double _exhangeStock;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -253,6 +255,7 @@
 			_userCoinsList.Clear();
 			await ReloadPage();
 			_exchangePayment= 0;
+			_userExchangeCoinsList.Clear();
 			_loading = false;
 			await ReloadPage();
 		}else
@@ -271,27 +274,19 @@
 	private void ValidateExchange()
 	{
 		double exchangeUserPayment = _totalUserPayment - _totalPurchaseAmount;
-		_exchangePayment = exchangeUserPayment;
 		if (exchangeUserPayment != 0)
 		{
 			_exchangeCoinsList = CurrencyService.GetAllCoins().ToList();
 			double exchangeAmount = PurchaseCalculatorService.GetTotalAmount(_exchangeCoinsList);
+			_exhangeStock = exchangeAmount;
 			if (exchangeUserPayment > exchangeAmount)
 			{
 				Snackbar.Add("Out of order", Severity.Error);
+				_loading = false;
 			}else
 			{
-				//REVISAR
-				//_userExchangeCoinsList = PurchaseCalculatorService.GetUserExchange(exchangeUserPayment, _exchangeCoinsList);
-				/*
-				if(_userExchangeCoinsList.Length() != 0)
-				{
-					foreach (Currency item in _userExchangeCoinsList)
-					{
-						CurrencyService.UpdateCurrencyStock(item,item.Amount);
-					}
-				}
-				*/
+				_exchangePayment = exchangeUserPayment;
+				_userExchangeCoinsList = PurchaseCalculatorService.GetUserExchange(exchangeUserPayment, _exchangeCoinsList).ToList();
 				Snackbar.Add("Successful Purchase", Severity.Success);
 			}
 		}else {
