@@ -11,5 +11,6 @@ namespace Application.PurchasedProducts
     {
         void AddPurchasedProduct(PurchasedProduct productPurchased);
         IEnumerable<PurchasedProduct> GetAllPurchasedProducts();
+        void RemovePurchasedProduct(PurchasedProduct productPurchased);
     }
 }

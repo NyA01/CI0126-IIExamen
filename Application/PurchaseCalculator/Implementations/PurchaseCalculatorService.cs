@@ -40,7 +40,7 @@ namespace Application.PurchaseCalculator.Implementations
 			IList<Currency> userExchangeList = new List<Currency>();
 			foreach (Currency item in vendingMachineExchangeList)
             {
-				while(userExchange != 0)
+				while(userExchange != 0 && item.Amount!=0)
                 {
 					int coinsAmount = (int)(exchange / item.Value);
 					Currency newCoin = new Currency(coinsAmount, item.Name, item.Country, item.Value);
