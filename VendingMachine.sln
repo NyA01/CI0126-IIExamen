@@ -13,13 +13,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Presentation", "Presentation\Presentation.csproj", "{7EE53DAA-9851-4470-92D4-96F23C13197F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "TestProject\TestProject.csproj", "{88E7FAEE-B271-4190-B3DB-E4E3C97F0D43}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProject", "TestProject\TestProject.csproj", "{88E7FAEE-B271-4190-B3DB-E4E3C97F0D43}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2CC285FE-F375-4343-9C8D-A23634F19B91} = {2CC285FE-F375-4343-9C8D-A23634F19B91}
 		{41B9F1D8-CD0A-4C38-BCAA-F1A0721C2128} = {41B9F1D8-CD0A-4C38-BCAA-F1A0721C2128}
 		{7EE53DAA-9851-4470-92D4-96F23C13197F} = {7EE53DAA-9851-4470-92D4-96F23C13197F}
 		{FB67DCEF-7AB4-4D29-81A5-0A95651E0CF5} = {FB67DCEF-7AB4-4D29-81A5-0A95651E0CF5}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProjectSelenium", "TestProjectSelenium\TestProjectSelenium.csproj", "{62B09F02-6C2B-41C3-A390-C2D509EDC7D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{88E7FAEE-B271-4190-B3DB-E4E3C97F0D43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88E7FAEE-B271-4190-B3DB-E4E3C97F0D43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88E7FAEE-B271-4190-B3DB-E4E3C97F0D43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62B09F02-6C2B-41C3-A390-C2D509EDC7D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62B09F02-6C2B-41C3-A390-C2D509EDC7D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62B09F02-6C2B-41C3-A390-C2D509EDC7D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62B09F02-6C2B-41C3-A390-C2D509EDC7D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
