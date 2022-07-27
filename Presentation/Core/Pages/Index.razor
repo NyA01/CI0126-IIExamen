@@ -249,8 +249,9 @@
 			}
 			_purchasedProductsList = PurchaseProductService.GetAllPurchasedProducts();
 			_loading = true;
-			await ReloadPage();
 			_totalUserPayment = 0;
+			_userCoinsList.Clear();
+			await ReloadPage();
 			_exchangePayment= 0;
 			_loading = false;
 			await ReloadPage();
@@ -280,9 +281,9 @@
 				Snackbar.Add("Out of order", Severity.Error);
 			}else
 			{
-				Snackbar.Add("Successful Purchase", Severity.Success);
+				//REVISAR
+				//_userExchangeCoinsList = PurchaseCalculatorService.GetUserExchange(exchangeUserPayment, _exchangeCoinsList);
 				/*
-				_userExchangeCoinsList = PurchaseCalculatorService.GetUserExchange(exchangeUserPayment, _exchangeCoinsList);
 				if(_userExchangeCoinsList.Length() != 0)
 				{
 					foreach (Currency item in _userExchangeCoinsList)
@@ -291,6 +292,7 @@
 					}
 				}
 				*/
+				Snackbar.Add("Successful Purchase", Severity.Success);
 			}
 		}else {
 			Snackbar.Add("Successful Purchase", Severity.Success);
