@@ -249,18 +249,23 @@
 			}
 			_purchasedProductsList = PurchaseProductService.GetAllPurchasedProducts();
 			_loading = true;
-			await Task.Delay(2000);
-			nav.NavigateTo($"/");
+			await ReloadPage();
 			_totalUserPayment = 0;
 			_exchangePayment= 0;
 			_loading = false;
-			await Task.Delay(2000);
-			nav.NavigateTo($"/");
+			await ReloadPage();
 		}else
 		{
 			Snackbar.Add("The money introduced is less than the total purchase amount", Severity.Error);
 		}
 	}
+
+	private async Task ReloadPage()
+	{
+		await Task.Delay(2000);
+		nav.NavigateTo($"/");
+	}
+
 
 	private void ValidateExchange()
 	{
