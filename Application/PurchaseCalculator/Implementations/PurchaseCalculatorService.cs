@@ -33,5 +33,27 @@ namespace Application.PurchaseCalculator.Implementations
 			}
 			return totalAmount;
 		}
+
+        public IEnumerable<Currency> GetUserExchange(double exchange, IList<Currency> vendingMachineExchangeList)
+        {
+			double userExchange=0;
+			IList<Currency> userExchangeList = new List<Currency>();
+			foreach (Currency item in vendingMachineExchangeList)
+            {
+				if(item.Amount != 0 && userExchange != exchange)
+				{
+					int coinsAmount = (int)(exchange/item.Value);
+					if(coinsAmount > 0)
+					{
+						Currency newCoin = new Currency(coinsAmount, item.Name, item.Country, item.Value);
+						userExchangeList.Add(newCoin);
+						userExchange = coinsAmount * item.Value;
+						exchange = exchange % item.Value;
+						item.Amount = item.Amount - coinsAmount;
+					}
+				}
+            }
+			return userExchangeList.ToList();
+		}
     }
 }

@@ -25,5 +25,10 @@ namespace Application.PurchasedProducts.Implementations
         {
             return _purchasedProductRepository.GetAllPurchasedProducts();
         }
+
+        public void RemovePurchasedProduct(PurchasedProduct productPurchased)
+        {
+            _purchasedProductRepository.RemovePurchasedProduct(productPurchased);
+        }
     }
 }

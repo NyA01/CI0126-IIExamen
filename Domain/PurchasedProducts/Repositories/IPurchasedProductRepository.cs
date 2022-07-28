@@ -11,5 +11,6 @@ namespace Domain.PurchasedProducts.Repositories
     {
         void AddPurchasedProduct(PurchasedProduct productPurchased);
         IEnumerable<PurchasedProduct> GetAllPurchasedProducts();
+        void RemovePurchasedProduct(PurchasedProduct productPurchased);
     }
 }

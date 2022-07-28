@@ -1,10 +1,6 @@
 ﻿using Domain.Currencies.Entities;
 using Domain.Currencies.Repositories;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Currencies.Implementations
 {

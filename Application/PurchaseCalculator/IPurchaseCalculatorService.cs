@@ -12,6 +12,7 @@ namespace Application.PurchaseCalculator
     {
         public double GetTotalPurchase(IEnumerable<PurchasedProduct> purchasedProducts);
         public double GetTotalAmount(IList<Currency> moneyList);
+        public IEnumerable<Currency> GetUserExchange(double exchange, IList<Currency> vendingMachineExchangeList);
     }
 }
 

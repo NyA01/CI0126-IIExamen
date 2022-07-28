@@ -27,10 +27,14 @@ namespace Infrastructure.Products.Repositories
 
         public IEnumerable<PurchasedProduct> GetAllPurchasedProducts()
         {
-            
             IEnumerable<PurchasedProduct> productList = _dbContext.PurchasedProducts.Where(e => e.Type == "Canned Soda").ToList();
             return productList;
             
+        }
+
+        public void RemovePurchasedProduct(PurchasedProduct productPurchased)
+        {
+            _dbContext.PurchasedProducts.Remove(productPurchased);
         }
     }
 }
